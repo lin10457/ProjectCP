@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <!-- Load c3.css -->
+    <link href="c3.css" rel="stylesheet">
+    <!-- Load d3.js and c3.js -->
+    <script src="d3-5.4.0.min.js"></script>
+    <script src="c3.min.js"></script>
+    <script>
+
+        var A0s;
+        var chart;
+        var timer;
+
+        function getIp() {
+            return document.getElementById("ip").value;
+        }
+
+        function onOffChart() {
+            if (document.getElementById('onOff').value == "Start") {
+                document.getElementById('onOff').value = "Stop";
+                timer = setInterval(
+                    () => {
+                        updateChart();
+                    },
+                    5000);
+
+            } else {
+                document.getElementById('onOff').value = "Start";
+                clearInterval(timer);
+            }
+        }
+
+        function autoChart() {
+
+            setInterval(
+                () => {
+                    updateChart();
+                },
+                5000);
+        }
+
+        function updateChart() {
+            var ip = getIp();
+            fetch('http://' + ip + '/ga')
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function (data) {
+                    console.log(data);
+                    A0s = A0s.concat(data.gas);
+                    chart.load({
+                        columns: [
+                            A0s,
+                        ]
+                    });
+                });
+        }
+
+        function getga() {
+            fetch('http://192.168.1.13/ga')
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function (data) {
+                    console.log(data);
+                });
+        }
+        function swpin() {
+            fetch('https://cloud.arest.io/test1a2b3/sw')
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function (data) {
+
+                    console.log(data["sw"]);
+                    document.getElementById('swpin1').value = data["sw"];
+                });
+            pintt = setInterval(
+                () => {
+                    swpin();
+                },
+                5000);
+        }
+        function vr1() {
+            fetch('https://cloud.arest.io/vrtest/vr')
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function (data) {
+                    console.log(data.vr);
+                    document.getElementById('vrpin1').value = data["vr"];
+                });
+        }
+        function AUTOSTART() {
+            vrmsg = setInterval(
+                () => {
+                    vr1();
+                },
+                1000);
+        }
+        function AUTOSTOP() {
+            clearInterval(vrmsg);
+        }
+
+
+        function vrpin() {
+            fetch('https://cloud.arest.io/vrtest/vr')
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function (data) {
+
+                    console.log(data["vr"]);
+                    document.getElementById('vrpin1').value = data["vr"];
+                });
+        }
+
+        window.onload = () => {
+            A0s = ['gas'];
+
+            chart = c3.generate({
+                bindto: '#chart',
+                data: {
+                    columns: [
+                        A0s
+                    ]
+                }
+            });
+        };
+    </script>
+</head>
+
+<body>
+    <input type="button" value="Events" onclick="getEvents()">
+    <input type="button" value="gas" onclick="getga()">
+    <input type="button" value="Update Chart" onclick="updateChart()">
+    <input type="button" value="Dynamic Chart" onclick="autoChart()">
+    <input type="button" value="Start" onclick="onOffChart()" id='onOff'>
+    <input type="button" value="123" onclick="swpin()">
+    <input type="button" value="VR" onclick="vr1()">
+    <input type="button" value="START" onclick="AUTOSTART()">
+    <input type="button" value="STOP" onclick="AUTOSTOP()">
+    <br>
+    狀態: <input id='vrpin1' type='text' readonly="readonly">
+
+    <div id="chart"></div>
+
+    <input type="text" name="" id="ip" value="192.168.1.13">
+    <br>
+    窗戶狀態:<input id='swpin1' type='text' readonly="readonly">
+
+</body>
+
+</html>
