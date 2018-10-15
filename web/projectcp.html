@@ -96,19 +96,6 @@
             clearInterval(vrmsg);
         }
 
-
-        function vrpin() {
-            fetch('https://cloud.arest.io/vrtest/vr')
-                .then(function (response) {
-                    return response.json();
-                })
-                .then(function (data) {
-
-                    console.log(data["vr"]);
-                    document.getElementById('vrpin1').value = data["vr"];
-                });
-        }
-
         window.onload = () => {
             A0s = ['gas'];
 
@@ -139,10 +126,10 @@
     <br>
     狀態: <input id='vrpin1' type='text' readonly="readonly">
 
-    <div id="chart"></div>
+    <div id="chart">
 
     <input type="text" name="" id="ip" value="192.168.1.13">
-    <br>
+</div><br>
     窗戶狀態:<input id='swpin1' type='text' readonly="readonly">
 
 </body>
