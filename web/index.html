@@ -13,13 +13,7 @@
     <script src="c3.min.js"></script>
     <script>
 
-        var A0s;
-        var A1s;
-        var PSs;
-        var PSchart;
-        var chart;
-        var pintt;
-        var timer;
+        var A0s, A1s, PSs, PSchart, chart, pintt, timer, vrmsg;
         var ipDht = "https://cloud.arest.io/brian";
         //////////////////////////////////////////////////////////////////////////////
         ///////////////////////////瓦斯與磁簧感測//////////////////////////////////////////
@@ -55,19 +49,19 @@
                 document.getElementById("onoffsw").value = "swStop";
                 pintt = setInterval(
                     () => {
-                    fetch('https://cloud.arest.io/qq1a2b3/sw')
-                        .then(function (response) {
-                            return response.json();
-                        })
-                        .then(function (data) {
+                        fetch('https://cloud.arest.io/qq1a2b3/sw')
+                            .then(function (response) {
+                                return response.json();
+                            })
+                            .then(function (data) {
 
-                            console.log(data["sw"]);
-                            document.getElementById('swpin1').value = data["sw"];
-                        });
-                }, 
-                1000);
-            }else{
-                document.getElementById("onoffsw").value ="swStart";
+                                console.log(data["sw"]);
+                                document.getElementById('swpin1').value = data["sw"];
+                            });
+                    },
+                    1000);
+            } else {
+                document.getElementById("onoffsw").value = "swStart";
                 clearInterval(pintt);
 
             }
@@ -86,17 +80,19 @@
                 });
         }
         function AUTOSTART() {
-            vrmsg = setInterval(
-                () => {
-                    vr1();
-                },
-                1000);
+            if (document.getElementById('onOffvr').value == "vrStart") {
+                document.getElementById('onOffvr').value = "vrStop";
+                vrmsg = setInterval(
+                    () => {
+                        vr1();
+                    },
+                    1000);
+            }
+            else {
+                document.getElementById('onOffvr').value = "vrStart"
+                clearInterval(vrmsg);
+            }
         }
-        function AUTOSTOP() {
-            clearInterval(vrmsg);
-        }
-
-
         function vrpin() {
             fetch('https://cloud.arest.io/vrtest/vr')
                 .then(function (response) {
@@ -243,13 +239,13 @@
     <!---------------------------------瓦斯與磁簧-------------------------------->
     <input type="button" value="gas" onclick="getga()">
     <input type="button" value="Update Chart" onclick="updategas()">
-    <input type="button" value="Dynamic Chart" onclick="autogas()"id="onoffgas">
+    <input type="button" value="Dynamic Chart" onclick="autogas()" id="onoffgas">
     <input type="button" value="STOP" onclick="onOffChart()">
     <!---------------------------------磁簧-------------------------------------->
     <input type="button" value="Sw" onclick="swpin()" id="onoffsw">
     <!--------------------------------紅外線------------------------------------->
     <input type="button" value="VR" onclick="vr1()">
-    <input type="button" value="START" onclick="AUTOSTART()">
+    <input type="button" value="START" onclick="AUTOSTART()"id="onOffvr">
     <input type="button" value="STOP" onclick="AUTOSTOP()">
     <!----------------------------------光敏------------------------------------->
     <input type="button" value="PSchart" onclick="rPSchart()">
