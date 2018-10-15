@@ -17,24 +17,7 @@
         var chart;
         var timer;
 
-        function getIp() {
-            return document.getElementById("ip").value;
-        }
 
-        function onOffChart() {
-            if (document.getElementById('onOff').value == "Start") {
-                document.getElementById('onOff').value = "Stop";
-                timer = setInterval(
-                    () => {
-                        updateChart();
-                    },
-                    5000);
-
-            } else {
-                document.getElementById('onOff').value = "Start";
-                clearInterval(timer);
-            }
-        }
 
         function autoChart() {
 
@@ -44,16 +27,18 @@
                 },
                 5000);
         }
-
+//////////////////////////////////////////////////////////////////////////////
+///////////////////////////瓦斯與磁簧感測//////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////// 
         function updateChart() {
-            var ip = getIp();
-            fetch('http://' + ip + '/ga')
+            //var ip = getIp();
+            fetch('https://cloud.arest.io/qq1a2b3')
                 .then(function (response) {
                     return response.json();
                 })
                 .then(function (data) {
-                    console.log(data);
-                    A0s = A0s.concat(data.gas);
+                    console.log(data.variables.gasanalog);
+                    A0s = A0s.concat(data.variables.gasanalog);
                     chart.load({
                         columns: [
                             A0s,
@@ -63,30 +48,33 @@
         }
 
         function getga() {
-            fetch('http://192.168.1.13/ga')
+            fetch('https://cloud.arest.io/qq1a2b3')
                 .then(function (response) {
                     return response.json();
                 })
                 .then(function (data) {
-                    console.log(data);
+                    console.log(data.data.variables.gasanalog);
                 });
         }
         function swpin() {
-            fetch('https://cloud.arest.io/test1a2b3/sw')
-                .then(function (response) {
-                    return response.json();
-                })
-                .then(function (data) {
+            pintt = setInterval(() => {
+                fetch('https://cloud.arest.io/qq1a2b3/sw')
+                    .then(function (response) {
+                        return response.json();
+                    })
+                    .then(function (data) {
 
-                    console.log(data["sw"]);
-                    document.getElementById('swpin1').value = data["sw"];
-                });
-            pintt = setInterval(
-                () => {
-                    swpin();
-                },
-                5000);
+                        console.log(data["sw"]);
+                        document.getElementById('swpin1').value = data["sw"];
+                    });
+            }, 1000);
         }
+        function sstop() {
+            clearInterval(pintt);
+        }
+//////////////////////////////////////////////////////////////////////////////
+///////////////////////////紅外線感測//////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////        
         function vr1() {
             fetch('https://cloud.arest.io/vrtest/vr')
                 .then(function (response) {
@@ -137,12 +125,14 @@
 </head>
 
 <body>
-    <input type="button" value="Events" onclick="getEvents()">
+    <!----------------------瓦斯與磁簧------------------>
     <input type="button" value="gas" onclick="getga()">
     <input type="button" value="Update Chart" onclick="updateChart()">
     <input type="button" value="Dynamic Chart" onclick="autoChart()">
-    <input type="button" value="Start" onclick="onOffChart()" id='onOff'>
-    <input type="button" value="123" onclick="swpin()">
+    <input type="button" value="STOP" onclick="onOffChart()">
+    <input type="button" value="status" onclick="swpin()">
+    <input type="button" value="swSTOP" onclick="sstop()">
+    <!----------------------紅外線---------------------->
     <input type="button" value="VR" onclick="vr1()">
     <input type="button" value="START" onclick="AUTOSTART()">
     <input type="button" value="STOP" onclick="AUTOSTOP()">
