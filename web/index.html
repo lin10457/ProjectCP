@@ -15,11 +15,10 @@
 
         var A0s, A1s, PSs, PSchart, chart, pintt, timer, vrmsg;
         var ipDht = "https://cloud.arest.io/brian";
-        //////////////////////////////////////////////////////////////////////////////
-        ///////////////////////////瓦斯與磁簧感測//////////////////////////////////////////
-        ////////////////////////////////////////////////////////////////////////////// 
-        function updateChart() {
-            //var ip = getIp();
+        ////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////瓦斯與磁簧感測////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////
+        function updategas() {
             fetch('https://cloud.arest.io/qq1a2b3')
                 .then(function (response) {
                     return response.json();
@@ -35,15 +34,15 @@
                 });
         }
 
-        function getga() {
-            fetch('https://cloud.arest.io/qq1a2b3')
-                .then(function (response) {
-                    return response.json();
-                })
-                .then(function (data) {
-                    console.log(data.data.variables.gasanalog);
-                });
-        }
+        // function getga() {
+        //     fetch('https://cloud.arest.io/qq1a2b3')
+        //         .then(function (response) {
+        //             return response.json();
+        //         })
+        //         .then(function (data) {
+        //             console.log(data.data.variables.gasanalog);
+        //         });
+        // }
         function swpin() {
             if (document.getElementById("onoffsw").value == "swStart") {
                 document.getElementById("onoffsw").value = "swStop";
@@ -66,9 +65,9 @@
 
             }
         }
-        //////////////////////////////////////////////////////////////////////////////
-        ///////////////////////////紅外線感測//////////////////////////////////////////
-        //////////////////////////////////////////////////////////////////////////////        
+        ///////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////紅外線感測///////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////       
         function vr1() {
             fetch('https://cloud.arest.io/vrtest/vr')
                 .then(function (response) {
@@ -80,8 +79,8 @@
                 });
         }
         function AUTOSTART() {
-            if (document.getElementById('onOffvr').value == "vrStart") {
-                document.getElementById('onOffvr').value = "vrStop";
+            if (document.getElementById('onOffvr').value == "VirStart") {
+                document.getElementById('onOffvr').value = "VirStop";
                 vrmsg = setInterval(
                     () => {
                         vr1();
@@ -118,7 +117,7 @@
             });
         };
 
-        //=========================增加光敏、溫\濕度===================================
+        //=========================增加光敏、溫\濕度=====================================//
 
         function getipDht() {
             return document.getElementById("ipDht").value;
@@ -126,7 +125,6 @@
 
         //光敏電阻讀取
         function rPSchart() {
-            // var ipDht = getipDht();
             fetch(ipDht)
                 .then(function (response) {
                     return response.json();
@@ -134,8 +132,6 @@
                 .then(function (data) {
                     console.log("PS:" + data.variables.photoresistor);
                     document.getElementById('vrpin1').value = data.variables.photoresistor;
-
-
                     // PSs = PSs.concat(data.variables.photoresistor);
                     // PSchart.load({
                     //     columns: [
@@ -146,6 +142,7 @@
 
 
         }
+        //TEMP AUTO
         function onOffTemChart() {
             if (document.getElementById('onOffTem').value == "TemStart") {
                 document.getElementById('onOffTem').value = "TemStop";
@@ -173,8 +170,6 @@
                 clearInterval(timer);
             }
         }
-
-
 
         //讀取溫度
         function tempChart() {
@@ -223,45 +218,34 @@
             });
         }
 
-
-
-
-
-
-
-//============================================================
-
+//=======================================================================================//
 
     </script>
 </head>
 
 <body>
-    <!---------------------------------瓦斯與磁簧-------------------------------->
+    <!----------------------------------------瓦斯與磁簧----------------------------------->
     <input type="button" value="gas" onclick="getga()">
     <input type="button" value="Update Chart" onclick="updategas()">
     <input type="button" value="Dynamic Chart" onclick="autogas()" id="onoffgas">
     <input type="button" value="STOP" onclick="onOffChart()">
-    <!---------------------------------磁簧-------------------------------------->
+    <!----------------------------------------磁簧----------------------------------------->
     <input type="button" value="Sw" onclick="swpin()" id="onoffsw">
-    <!--------------------------------紅外線------------------------------------->
-    <input type="button" value="VR" onclick="vr1()">
-    <input type="button" value="START" onclick="AUTOSTART()"id="onOffvr">
-    <input type="button" value="STOP" onclick="AUTOSTOP()">
-    <!----------------------------------光敏------------------------------------->
+    <!----------------------------------------紅外線--------------------------------------->
+    <input type="button" value="VirSTART" onclick="AUTOSTART()" id="onOffvr">
+    <!----------------------------------------光敏----------------------------------------->
     <input type="button" value="PSchart" onclick="rPSchart()">
-    <!----------------------------------DHT11 溫度------------------------------->
+    <!----------------------------------------DHT11 溫度----------------------------------->
     <input type="button" value="TemStart" onclick="onOffTemChart()" id="onOffTem">
-    <!------------------------------------DHT11 濕度----------------------------->
+    <!----------------------------------------DHT11 濕度----------------------------------->
     <input type="button" value="HumStart" onclick="onOffHumChart()" id="onOffHum">
-
     <br>
+    <!----------------------------------------目前狀態顯示----------------------------------->
     狀態: <input id='vrpin1' type='text' readonly="readonly">
-
     <div id="chart"></div>
 
     <br>
     <!-- <br><input type="text" name="" id="ipDht" value="https://cloud.arest.io/brian"> -->
-    <br>
     窗戶狀態:<input id='swpin1' type='text' readonly="readonly">
 
 </body>
