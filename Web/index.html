@@ -192,7 +192,6 @@
         }
         //讀取濕度
         function humChart() {
-            // var ipDht = getipDht();
             fetch(ipDht)
                 .then(function (response) {
                     return response.json();
