@@ -13,36 +13,41 @@
     <script src="c3.min.js"></script>
     <script>
 
-        var A0s, A1s, PSs, PSchart, chart, pintt, timer, vrmsg;
+        var A0s, A1s, A2s, PSs, PSchart, chart, augas, pintt, psc, humc, tempc, vrmsg;
         var ipDht = "https://cloud.arest.io/brian";
-        ////////////////////////////////////////////////////////////////////////////////////
-        ///////////////////////////瓦斯與磁簧感測////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////////////////
-        function updategas() {
+        ///////////////////////////瓦斯感測////////////////////////////////////////////
+        function gasone() {
             fetch('https://cloud.arest.io/qq1a2b3')
                 .then(function (response) {
                     return response.json();
                 })
                 .then(function (data) {
                     console.log(data.variables.gasanalog);
-                    A0s = A0s.concat(data.variables.gasanalog);
-                    chart.load({
+                    A2s = A2s.concat(data.variables.gasanalog);
+                    chartb.load({
                         columns: [
-                            A0s,
+                            A2s,
                         ]
                     });
                 });
         }
+        function autogas() {
+            if (document.getElementById('onOffgas').value == "GasStart") {
+                document.getElementById('onOffgas').value = "GasStop";
+                augas = setInterval(
+                    () => {
+                        gasone();
+                    },
+                    2000);
+            }
+            else {
+                document.getElementById('onOffgas').value = "GasStart";
+                clearInterval(augas);
+            }
+        }
 
-        // function getga() {
-        //     fetch('https://cloud.arest.io/qq1a2b3')
-        //         .then(function (response) {
-        //             return response.json();
-        //         })
-        //         .then(function (data) {
-        //             console.log(data.data.variables.gasanalog);
-        //         });
-        // }
+        /////////////////////////////磁簧感測////////////////////////////////////////////
+
         function swpin() {
             if (document.getElementById("onoffsw").value == "swStart") {
                 document.getElementById("onoffsw").value = "swStop";
@@ -53,21 +58,20 @@
                                 return response.json();
                             })
                             .then(function (data) {
-
                                 console.log(data["sw"]);
                                 document.getElementById('swpin1').value = data["sw"];
                             });
                     },
-                    1000);
+                    2000);
             } else {
                 document.getElementById("onoffsw").value = "swStart";
                 clearInterval(pintt);
 
             }
         }
-        ///////////////////////////////////////////////////////////////////////////////////
+
         ///////////////////////////紅外線感測///////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////////////////       
+
         function vr1() {
             fetch('https://cloud.arest.io/vrtest/vr')
                 .then(function (response) {
@@ -78,17 +82,17 @@
                     document.getElementById('vrpin1').value = data["vr"];
                 });
         }
-        function AUTOSTART() {
-            if (document.getElementById('onOffvr').value == "VirStart") {
-                document.getElementById('onOffvr').value = "VirStop";
+        function AUTOVir() {
+            if (document.getElementById('onOffvir').value == "VirStart") {
+                document.getElementById('onOffvir').value = "VirStop";
                 vrmsg = setInterval(
                     () => {
                         vr1();
                     },
-                    1000);
+                    2000);
             }
             else {
-                document.getElementById('onOffvr').value = "vrStart"
+                document.getElementById('onOffvir').value = "VirStart"
                 clearInterval(vrmsg);
             }
         }
@@ -104,18 +108,6 @@
                 });
         }
 
-        window.onload = () => {
-            A0s = ['gas'];
-
-            chart = c3.generate({
-                bindto: '#chart',
-                data: {
-                    columns: [
-                        A0s
-                    ]
-                }
-            });
-        };
 
         //=========================增加光敏、溫\濕度=====================================//
 
@@ -132,48 +124,58 @@
                 .then(function (data) {
                     console.log("PS:" + data.variables.photoresistor);
                     document.getElementById('vrpin1').value = data.variables.photoresistor;
-                    // PSs = PSs.concat(data.variables.photoresistor);
-                    // PSchart.load({
-                    //     columns: [
-                    //         PSs,
-                    //     ]
-                    // });
+                    PSs = PSs.concat(data.variables.photoresistor);
+                    PSchart.load({
+                        columns: [
+                            PSs,
+                        ]
+                    });
                 });
-
-
+        }
+        function autoPS() {
+            if (document.getElementById('onOffPs').value == "PSStart") {
+                document.getElementById('onOffPs').value = "PSStop";
+                psc = setInterval(
+                    () => {
+                        rPSchart()
+                    },
+                    2000);
+            } else {
+                document.getElementById('onOffPs').value = "PSStart";
+                clearInterval(psc);
+            }
         }
         //TEMP AUTO
         function onOffTemChart() {
             if (document.getElementById('onOffTem').value == "TemStart") {
                 document.getElementById('onOffTem').value = "TemStop";
-                timer = setInterval(
+                tempc = setInterval(
                     () => {
                         tempChart()
                     },
-                    3000);
+                    2000);
             } else {
                 document.getElementById('onOffTem').value = "TemStart";
-                clearInterval(timer);
+                clearInterval(tempc);
             }
         }
         //HUM AUTO
         function onOffHumChart() {
             if (document.getElementById('onOffHum').value == "HumStart") {
                 document.getElementById('onOffHum').value = "HumStop";
-                timer = setInterval(
+                humc = setInterval(
                     () => {
                         humChart()
                     },
-                    3000);
+                    2000);
             } else {
                 document.getElementById('onOffHum').value = "HumStart";
-                clearInterval(timer);
+                clearInterval(humc);
             }
         }
 
         //讀取溫度
         function tempChart() {
-            // var ipDht = getipDht();
             fetch(ipDht)
                 .then(function (response) {
                     return response.json();
@@ -206,8 +208,10 @@
                 });
         }
         window.onload = () => {
-            A0s = ['溫度.temperature'];
-            A1s = ['濕度.humidity'];
+            A0s = ['溫度 temperature'];
+            A1s = ['濕度 humidity'];
+            A2s = ['瓦斯濃度'];
+
             chart = c3.generate({
                 bindto: '#chart',
                 data: {
@@ -216,8 +220,15 @@
                     ]
                 }
             });
+            chart = c3.generate({
+                bindto: '#chartb',
+                data: {
+                    columns: [
+                        A2s
+                    ]
+                }
+            });
         }
-
 //=======================================================================================//
 
     </script>
@@ -225,16 +236,13 @@
 
 <body>
     <!----------------------------------------瓦斯與磁簧----------------------------------->
-    <input type="button" value="gas" onclick="getga()">
-    <input type="button" value="Update Chart" onclick="updategas()">
-    <input type="button" value="Dynamic Chart" onclick="autogas()" id="onoffgas">
-    <input type="button" value="STOP" onclick="onOffChart()">
+    <input type="button" value="GasStart" onclick="autogas()" id="onOffgas">
     <!----------------------------------------磁簧----------------------------------------->
-    <input type="button" value="Sw" onclick="swpin()" id="onoffsw">
+    <input type="button" value="SwStart" onclick="swpin()" id="onoffsw">
     <!----------------------------------------紅外線--------------------------------------->
-    <input type="button" value="VirSTART" onclick="AUTOSTART()" id="onOffvr">
+    <input type="button" value="VirSTART" onclick="AUTOVir()" id="onOffvir">
     <!----------------------------------------光敏----------------------------------------->
-    <input type="button" value="PSchart" onclick="rPSchart()">
+    <input type="button" value="PSchart" onclick="rPSchart()" id="onOffPs">
     <!----------------------------------------DHT11 溫度----------------------------------->
     <input type="button" value="TemStart" onclick="onOffTemChart()" id="onOffTem">
     <!----------------------------------------DHT11 濕度----------------------------------->
@@ -243,9 +251,9 @@
     <!----------------------------------------目前狀態顯示----------------------------------->
     狀態: <input id='vrpin1' type='text' readonly="readonly">
     <div id="chart"></div>
-
     <br>
-    <!-- <br><input type="text" name="" id="ipDht" value="https://cloud.arest.io/brian"> -->
+    <div id="chartb"></div>
+    <br>
     窗戶狀態:<input id='swpin1' type='text' readonly="readonly">
 
 </body>
