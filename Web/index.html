@@ -14,10 +14,11 @@
     <script>
 
         var A0s, A1s, A2s, PSs, PSchart, chart, augas, pintt, psc, humc, tempc, vrmsg;
+        var ip8266gs="https://cloud.arest.io/qwa5sz";
+        var ipVir="https://cloud.arest.io/vrtest/vr";        
         var ipDht = "https://cloud.arest.io/brian";
-        var ip8266gs="https://cloud.arest.io/qq1a2b3";
-        var ipVir="https://cloud.arest.io/vrtest/vr";
-        ///////////////////////////瓦斯感測////////////////////////////////////////////
+
+        /////////////////////////////////瓦斯感測//////////////////////////////////////
         function gasone() {
             fetch(ip8266gs)
                 .then(function (response) {
