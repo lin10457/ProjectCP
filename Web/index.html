@@ -15,9 +15,11 @@
 
         var A0s, A1s, A2s, PSs, PSchart, chart, augas, pintt, psc, humc, tempc, vrmsg;
         var ipDht = "https://cloud.arest.io/brian";
+        var ip8266gs="https://cloud.arest.io/qq1a2b3";
+        var ipVir="https://cloud.arest.io/vrtest/vr";
         ///////////////////////////瓦斯感測////////////////////////////////////////////
         function gasone() {
-            fetch('https://cloud.arest.io/qq1a2b3')
+            fetch(ip8266gs)
                 .then(function (response) {
                     return response.json();
                 })
@@ -53,7 +55,7 @@
                 document.getElementById("onoffsw").value = "swStop";
                 pintt = setInterval(
                     () => {
-                        fetch('https://cloud.arest.io/qq1a2b3/sw')
+                        fetch(ip8266gs+'sw')
                             .then(function (response) {
                                 return response.json();
                             })
@@ -73,7 +75,7 @@
         ///////////////////////////紅外線感測///////////////////////////////////////////////
 
         function vr1() {
-            fetch('https://cloud.arest.io/vrtest/vr')
+            fetch(ipVir)
                 .then(function (response) {
                     return response.json();
                 })
@@ -97,7 +99,7 @@
             }
         }
         function vrpin() {
-            fetch('https://cloud.arest.io/vrtest/vr')
+            fetch(ipVir)
                 .then(function (response) {
                     return response.json();
                 })
