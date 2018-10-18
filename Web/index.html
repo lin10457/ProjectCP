@@ -14,9 +14,21 @@
     <script>
 
         var A0s, A1s, A2s, PSs, PSchart, chart, augas, pintt, psc, humc, tempc, vrmsg;
-        var ip8266gs="https://cloud.arest.io/qwa5sz";
-        var ipVir="https://cloud.arest.io/vrtest/vr";        
+        var ip8266gs = "https://cloud.arest.io/qwa5sz";
         var ipDht = "https://cloud.arest.io/brian";
+        var ipstarf = "https://cloud.arest.io/qwa5sz/guard"
+        const MAX_LEN = 20;
+
+        /////////////////////////////////啟動警報//////////////////////////////////////
+        function power() {
+            fetch(ipstarf)
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function (data) {
+                    console.log(data.return_value);
+                });
+        };
 
         /////////////////////////////////瓦斯感測//////////////////////////////////////
         function gasone() {
@@ -25,11 +37,12 @@
                     return response.json();
                 })
                 .then(function (data) {
-                    console.log(data.variables.gasanalog);
+                    console.log("gas:" + data.variables.gasanalog);
                     A2s = A2s.concat(data.variables.gasanalog);
+                    A2s.splice();
                     chartb.load({
                         columns: [
-                            A2s,
+                        A2s,
                         ]
                     });
                 });
@@ -41,7 +54,7 @@
                     () => {
                         gasone();
                     },
-                    2000);
+                    3000);
             }
             else {
                 document.getElementById('onOffgas').value = "GasStart";
@@ -52,22 +65,22 @@
         /////////////////////////////磁簧感測////////////////////////////////////////////
 
         function swpin() {
-            if (document.getElementById("onoffsw").value == "swStart") {
-                document.getElementById("onoffsw").value = "swStop";
+            if (document.getElementById('onoffsw').value == "SwStart") {
+                document.getElementById('onoffsw').value = "SwStop";
                 pintt = setInterval(
                     () => {
-                        fetch(ip8266gs+'sw')
+                        fetch(ip8266gs)
                             .then(function (response) {
                                 return response.json();
                             })
                             .then(function (data) {
-                                console.log(data["sw"]);
-                                document.getElementById('swpin1').value = data["sw"];
+                                console.log(data.variables.sw);
+                                document.getElementById('swpin1').value = data.variables.sw;
                             });
                     },
-                    2000);
+                    3000);
             } else {
-                document.getElementById("onoffsw").value = "swStart";
+                document.getElementById("onoffsw").value = "SwStart";
                 clearInterval(pintt);
 
             }
@@ -76,13 +89,13 @@
         ///////////////////////////紅外線感測///////////////////////////////////////////////
 
         function vr1() {
-            fetch(ipVir)
+            fetch(ip8266gs)
                 .then(function (response) {
                     return response.json();
                 })
                 .then(function (data) {
-                    console.log(data.vr);
-                    document.getElementById('vrpin1').value = data["vr"];
+                    console.log(data.variables.infrared);
+                    document.getElementById('vrpin1').value = data.variables.infrared;
                 });
         }
         function AUTOVir() {
@@ -92,31 +105,15 @@
                     () => {
                         vr1();
                     },
-                    2000);
+                    3000);
             }
             else {
                 document.getElementById('onOffvir').value = "VirStart"
                 clearInterval(vrmsg);
             }
         }
-        function vrpin() {
-            fetch(ipVir)
-                .then(function (response) {
-                    return response.json();
-                })
-                .then(function (data) {
-
-                    console.log(data["vr"]);
-                    document.getElementById('vrpin1').value = data["vr"];
-                });
-        }
-
 
         //=========================增加光敏、溫\濕度=====================================//
-
-        function getipDht() {
-            return document.getElementById("ipDht").value;
-        }
 
         //光敏電阻讀取
         function rPSchart() {
@@ -126,7 +123,7 @@
                 })
                 .then(function (data) {
                     console.log("PS:" + data.variables.photoresistor);
-                    document.getElementById('vrpin1').value = data.variables.photoresistor;
+                    document.getElementById('vrpin2').value = data.variables.photoresistor;
                     PSs = PSs.concat(data.variables.photoresistor);
                     PSchart.load({
                         columns: [
@@ -142,7 +139,7 @@
                     () => {
                         rPSchart()
                     },
-                    2000);
+                    3000);
             } else {
                 document.getElementById('onOffPs').value = "PSStart";
                 clearInterval(psc);
@@ -156,7 +153,7 @@
                     () => {
                         tempChart()
                     },
-                    2000);
+                    3000);
             } else {
                 document.getElementById('onOffTem').value = "TemStart";
                 clearInterval(tempc);
@@ -170,7 +167,7 @@
                     () => {
                         humChart()
                     },
-                    2000);
+                    3000);
             } else {
                 document.getElementById('onOffHum').value = "HumStart";
                 clearInterval(humc);
@@ -186,6 +183,7 @@
                 .then(function (data) {
                     console.log("tem:" + data.variables.temperature);
                     A0s = A0s.concat(data.variables.temperature);
+                    A0s.splice(MAX_LEN, 1);
                     chart.load({
                         columns: [
                             A0s,
@@ -202,6 +200,7 @@
                 .then(function (data) {
                     console.log("hum:" + data.variables.humidity);
                     A1s = A1s.concat(data.variables.humidity);
+                    A1s.splice(MAX_LEN, 1);
                     chart.load({
                         columns: [
                             A1s,
@@ -222,7 +221,7 @@
                     ]
                 }
             });
-            chart = c3.generate({
+            chartb = c3.generate({
                 bindto: '#chartb',
                 data: {
                     columns: [
@@ -237,26 +236,29 @@
 </head>
 
 <body>
+
+    <input type="button" value="Powerup" onclick="power()" id="onoffpw">
     <!----------------------------------------瓦斯與磁簧----------------------------------->
     <input type="button" value="GasStart" onclick="autogas()" id="onOffgas">
     <!----------------------------------------磁簧----------------------------------------->
     <input type="button" value="SwStart" onclick="swpin()" id="onoffsw">
     <!----------------------------------------紅外線--------------------------------------->
-    <input type="button" value="VirSTART" onclick="AUTOVir()" id="onOffvir">
+    <input type="button" value="VirStart" onclick="AUTOVir()" id="onOffvir">
     <!----------------------------------------光敏----------------------------------------->
-    <input type="button" value="PSchart" onclick="autoPS()" id="onOffPs">
+    <input type="button" value="PSStart" onclick="autoPS()" id="onOffPs">
     <!----------------------------------------DHT11 溫度----------------------------------->
     <input type="button" value="TemStart" onclick="onOffTemChart()" id="onOffTem">
     <!----------------------------------------DHT11 濕度----------------------------------->
     <input type="button" value="HumStart" onclick="onOffHumChart()" id="onOffHum">
     <br>
     <!----------------------------------------目前狀態顯示----------------------------------->
-    狀態: <input id='vrpin1' type='text' readonly="readonly">
+    紅外狀態：<input id='vrpin1' type='text' readonly="readonly">
+    環境光敏：<input id='vrpin2' type='text' readonly="readonly">
     <div id="chart"></div>
     <br>
     <div id="chartb"></div>
     <br>
-    窗戶狀態:<input id='swpin1' type='text' readonly="readonly">
+    窗戶狀態：<input id='swpin1' type='text' readonly="readonly">
 
 </body>
 
