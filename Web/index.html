@@ -184,7 +184,6 @@
                 .then(function (data) {
                     console.log("tem:" + data.variables.temperature);
                     A0s = A0s.concat(data.variables.temperature);
-                    A0s.splice(MAX_LEN, 1);
                     chart.load({
                         columns: [
                             A0s,
@@ -201,7 +200,6 @@
                 .then(function (data) {
                     console.log("hum:" + data.variables.humidity);
                     A1s = A1s.concat(data.variables.humidity);
-                    A1s.splice(MAX_LEN, 1);
                     chart.load({
                         columns: [
                             A1s,
