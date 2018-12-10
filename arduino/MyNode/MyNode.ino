@@ -2,13 +2,14 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 #include <aREST.h>
-#define DHTPIN 2  //PORT:D4
+#define DHTPIN 2 //PORT:D4
 float temperature;
 float humidity;
 
 int photoresistor;
 
-void setup() {
+void setup()
+{
   pinMode(2, OUTPUT);
   // Start Serial
   Serial.begin(115200);
@@ -16,11 +17,10 @@ void setup() {
   setupDHT();
 
   setupARest();
-
-
 }
 
-void loop() {
+void loop()
+{
 
   loopDHT();
   //  loopDHT_Fake();
@@ -32,25 +32,23 @@ void loop() {
 
   if (temperature < 30 && humidity < 60)
   {
-    digitalWrite(2, HIGH);
-    delay(500);
-    digitalWrite(2, LOW);
-    delay(500);
-    digitalWrite(2, HIGH);
-    delay(500);
-    digitalWrite(2, LOW);
-    delay(500);
+    for (int i = 0; i < 5; i++)
+    {
+      digitalWrite(2, HIGH);
+      delay(500);
+      digitalWrite(2, LOW);
+      delay(500);
+    }
   }
   else if (temperature > 30 && humidity < 60)
   {
-    digitalWrite(2, HIGH);
-    delay(250);
-    digitalWrite(2, LOW);
-    delay(250);
-    digitalWrite(2, HIGH);
-    delay(250);
-    digitalWrite(2, LOW);
-    delay(250);
+    for (int i = 0; i < 3; i++)
+    {
+      digitalWrite(2, HIGH);
+      delay(250);
+      digitalWrite(2, LOW);
+      delay(250);
+    }
     digitalWrite(2, HIGH);
     delay(500);
     digitalWrite(2, LOW);
@@ -58,56 +56,22 @@ void loop() {
   }
   else if (temperature < 30 && humidity > 60)
   {
-    digitalWrite(2, HIGH);
-    delay(500);
-    digitalWrite(2, LOW);
-    delay(250);
-    digitalWrite(2, HIGH);
-    delay(500);
-    digitalWrite(2, LOW);
-    delay(250);
-    digitalWrite(2, HIGH);
-    delay(250);
-    digitalWrite(2, LOW);
-    delay(250);
+    for (int i = 0; i < 3; i++)
+    {
+      digitalWrite(2, HIGH);
+      delay(500);
+      digitalWrite(2, LOW);
+      delay(150);
+    }
   }
-  else {
-
-    digitalWrite(2, HIGH);
-    delay(125);
-    digitalWrite(2, LOW);
-    delay(125);
-    digitalWrite(2, HIGH);
-    delay(125);
-    digitalWrite(2, LOW);
-    delay(125);
-    digitalWrite(2, HIGH);
-    delay(125);
-    digitalWrite(2, LOW);
-    delay(125);
-    digitalWrite(2, HIGH);
-    delay(125);
-    digitalWrite(2, LOW);
-    delay(125);
-    digitalWrite(2, HIGH);
-    delay(125);
-    digitalWrite(2, LOW);
-    delay(125);
-    digitalWrite(2, HIGH);
-    delay(125);
-    digitalWrite(2, LOW);
-    delay(125);
-    digitalWrite(2, HIGH);
-    delay(125);
-    digitalWrite(2, LOW);
-    delay(125);
-    digitalWrite(2, HIGH);
-    delay(125);
-    digitalWrite(2, LOW);
-    delay(125);
-
-
+  else
+  {
+    for (int i = 0; i < 10; i++)
+    {
+      digitalWrite(2, HIGH);
+      delay(125);
+      digitalWrite(2, LOW);
+      delay(125);
+    }
   }
-
-
 }
